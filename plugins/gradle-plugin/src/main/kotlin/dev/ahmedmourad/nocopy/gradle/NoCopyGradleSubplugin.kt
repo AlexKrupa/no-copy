@@ -32,12 +32,6 @@ class NoCopyGradleSubplugin : KotlinGradleSubplugin<AbstractCompile> {
         androidProjectHandler: Any?,
         kotlinCompilation: KotlinCompilation<KotlinCommonOptions>?
     ): List<SubpluginOption> {
-
-        project.dependencies.add(
-                "implementation",
-                "dev.ahmedmourad.nocopy:nocopy-annotations:$VERSION"
-        )
-
         return emptyList()
     }
 }

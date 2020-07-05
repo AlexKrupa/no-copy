@@ -1,8 +1,5 @@
 package dev.ahmedmourad.nocopy.sample
 
-import dev.ahmedmourad.nocopy.annotations.NoCopy
-
-@NoCopy
 data class PhoneNumber private constructor(
         val value: String
 ) {
