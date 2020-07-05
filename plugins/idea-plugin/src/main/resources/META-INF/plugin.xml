@@ -28,32 +28,6 @@
                 implementationClass="dev.ahmedmourad.nocopy.idea.suppressors.DataClassPrivateConstructorInspectionSuppressor"
         />
 
-        <localInspection
-                language="kotlin"
-                displayName="NoCopy: no-copy annotations can only be applied to data classes."
-                groupPath="Kotlin"
-                groupBundle="messages.InspectionsBundle"
-                groupKey="group.names.probable.bugs"
-                enabledByDefault="true"
-                level="ERROR"
-                suppressId="NoCopyAnnotatedNonDataClass"
-                shortName="NoCopyAnnotatedNonDataClass"
-                implementationClass="dev.ahmedmourad.nocopy.idea.inspections.AnnotatedNonDataClassInspection"
-        />
-
-        <localInspection
-                language="kotlin"
-                displayName="NoCopy: Private data class constructor is exposed via the generated 'copy' method."
-                groupPath="Kotlin"
-                groupBundle="messages.InspectionsBundle"
-                groupKey="group.names.probable.bugs"
-                enabledByDefault="true"
-                level="WARNING"
-                suppressId="NoCopyDataClassPrivateConstructor"
-                shortName="NoCopyDataClassPrivateConstructor"
-                implementationClass="dev.ahmedmourad.nocopy.idea.inspections.DataClassPrivateConstructorInspection"
-        />
-
     </extensions>
 
 </idea-plugin>
