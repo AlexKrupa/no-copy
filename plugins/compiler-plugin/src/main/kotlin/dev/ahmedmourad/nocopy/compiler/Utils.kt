@@ -1,18 +1,14 @@
 package dev.ahmedmourad.nocopy.compiler
 
-import dev.ahmedmourad.nocopy.core.NO_COPY_ANNOTATION
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
-import org.jetbrains.kotlin.descriptors.annotations.Annotated
-import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.js.descriptorUtils.hasPrimaryConstructor
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.resolve.descriptorUtil.isEffectivelyPrivateApi
 
-private fun Annotated.hasAnnotation(annotation: FqName): Boolean {
-    return annotations.hasAnnotation(annotation)
-}
-
-internal fun ClassDescriptor.hasNoCopy(): Boolean {
-    return this.hasAnnotation(FqName(NO_COPY_ANNOTATION))
+internal fun ClassDescriptor.hasPrivatePrimaryConstructor(): Boolean {
+    if (!hasPrimaryConstructor()) return false
+    return constructors.first { it.isPrimary }.isEffectivelyPrivateApi
 }
 
 internal fun isGeneratedCopyMethod(

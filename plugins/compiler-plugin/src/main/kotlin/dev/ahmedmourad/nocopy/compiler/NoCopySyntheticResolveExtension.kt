@@ -20,24 +20,8 @@ open class NoCopySyntheticResolveExtension(
             result: MutableCollection<SimpleFunctionDescriptor>
     ) {
 
-        val hasNoCopy = thisDescriptor.hasNoCopy()
-
-        if (!thisDescriptor.isData) {
-
-            val annotation = when {
-                hasNoCopy -> "@NoCopy"
-                else -> null
-            }
-
-            if (annotation != null) {
-                messageCollector?.error(
-                        "Only data classes could be annotated with $annotation!",
-                        thisDescriptor.findPsi()
-                )
-            } else {
-                super.generateSyntheticMethods(thisDescriptor, name, bindingContext, fromSupertypes, result)
-            }
-
+        val hasPrivatePrimaryConstructor = thisDescriptor.hasPrivatePrimaryConstructor()
+        if (!hasPrivatePrimaryConstructor) {
             return
         }
 
@@ -53,7 +37,7 @@ open class NoCopySyntheticResolveExtension(
         }
 
         when {
-            hasNoCopy -> handleNoCopy(generatedCopyMethodIndex, result)
+            hasPrivatePrimaryConstructor -> handleNoCopy(generatedCopyMethodIndex, result)
         }
     }
 

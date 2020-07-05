@@ -17,27 +17,12 @@ class NoCopyPluginTests {
     var temporaryFolder: TemporaryFolder = TemporaryFolder()
 
     @Test
-    fun `@NoCopy annotated non-data class should fail compilation`() {
+    fun `non-data class with private constructor should compile just fine`() {
         val result = compile(kotlin("NonDataClass.kt",
                 """
           package dev.ahmedmourad.nocopy.compiler
           import dev.ahmedmourad.nocopy.annotations.NoCopy
-          @NoCopy
-          class NonDataClass(val a: Int)
-          """
-        ))
-        assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.COMPILATION_ERROR)
-        assertThat(result.messages).contains("NonDataClass.kt: (3, 1): Only data classes could be annotated with @NoCopy!")
-    }
-
-    @Test
-    fun `@NoCopy annotated data class should compile just fine`() {
-        val result = compile(kotlin("DataClass.kt",
-                """
-          package dev.ahmedmourad.nocopy.compiler
-          import dev.ahmedmourad.nocopy.annotations.NoCopy
-          @NoCopy
-          data class DataClass(val a: Int)
+          class NonDataClass private constructor(val a: Int)
           """
         ))
         assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
@@ -45,7 +30,20 @@ class NoCopyPluginTests {
     }
 
     @Test
-    fun `un-annotated normal class should compile just fine`() {
+    fun `data class with private constructor should compile just fine`() {
+        val result = compile(kotlin("DataClass.kt",
+                """
+          package dev.ahmedmourad.nocopy.compiler
+          import dev.ahmedmourad.nocopy.annotations.NoCopy
+          data class DataClass private constructor(val a: Int)
+          """
+        ))
+        assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
+        assertThat(result.messages).isEmpty()
+    }
+
+    @Test
+    fun `normal class with public constructor should compile just fine`() {
         val result = compile(kotlin("NormalClass.kt",
                 """
           package dev.ahmedmourad.nocopy.compiler
@@ -57,19 +55,19 @@ class NoCopyPluginTests {
     }
 
     @Test
-    fun `un-annotated data class should compile just fine`() {
+    fun `data class with public constructor should compile just fine`() {
         val result = compile(kotlin("DataClass.kt",
                 """
           package dev.ahmedmourad.nocopy.compiler
           data class DataClass(val a: Int)
           """
         ))
-        assertThat(result.messages).isEmpty()
         assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
+        assertThat(result.messages).isEmpty()
     }
 
     @Test
-    fun `using 'copy' of an unannotated data class should compile just fine`() {
+    fun `using 'copy' of an data class with public constructor should compile just fine`() {
         val result = compile(kotlin("DataClass.kt",
                 """
           package dev.ahmedmourad.nocopy.compiler
@@ -83,29 +81,27 @@ class NoCopyPluginTests {
     }
 
     @Test
-    fun `using 'copy' of a @NoCopy annotated data class should fail compilation`() {
+    fun `using 'copy' of a data class with private constructor should fail compilation`() {
         val result = compile(kotlin("DataClass.kt",
                 """
           package dev.ahmedmourad.nocopy.compiler
           import dev.ahmedmourad.nocopy.annotations.NoCopy
-          @NoCopy
-          data class DataClass(val a: Int) {
+          data class DataClass private constructor(val a: Int) {
             fun withFiveForNoReason() = this.copy(a = 3)
           }
           """
         ))
         assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.COMPILATION_ERROR)
-        assertThat(result.messages).contains("DataClass.kt: (5, 36): Unresolved reference: copy")
+        assertThat(result.messages).contains("DataClass.kt: (4, 36): Unresolved reference: copy")
     }
 
     @Test
-    fun `using 'copy' of a @NoCopy annotated data class which declares another 'copy' should compile just fine`() {
+    fun `using 'copy' of a data class with private constructor which declares another 'copy' should compile just fine`() {
         val result = compile(kotlin("DataClass.kt",
                 """
           package dev.ahmedmourad.nocopy.compiler
           import dev.ahmedmourad.nocopy.annotations.NoCopy
-          @NoCopy
-          data class DataClass(val a: Int) {
+          data class DataClass private constructor(val a: Int) {
             fun withFiveForNoReason() = this.copy(a = 11)
             fun copy(a: Int) {
                 println(a)
